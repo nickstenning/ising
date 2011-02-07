@@ -4,9 +4,9 @@ import os, commands, re
 from fabricate import *
 
 targets  = {
-    'skel': {
+    'tug': {
         'libs': [],
-        'sources': ['skel']
+        'sources': ['tug']
     }
 }
 
