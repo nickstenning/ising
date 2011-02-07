@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include "zmq.h"
 
@@ -26,7 +27,7 @@ int main (unsigned int /*argc*/, char* const /*argv*/[])
     { data, 0, ZMQ_POLLIN, 0 }
   };
 
-  Wavefield wf(100, 100);
+  Wavefield wf(200, 200);
 
   while (1) {
     zmq::poll(&poll_items[0], 2, -1);
@@ -45,9 +46,19 @@ int main (unsigned int /*argc*/, char* const /*argv*/[])
   return 0;
 }
 
-int process_comm(zmq::socket_t&, Wavefield&)
+int process_comm(zmq::socket_t& sock, Wavefield& wf)
 {
-  // NOOP
+  std::istringstream s_in( s_recv(sock) );
+  std::ostringstream s_out;
+  std::string cmd;
+
+  s_in >> cmd;
+
+  if (cmd.compare("dims") == 0) {
+    s_out << wf.rows() << " " << wf.cols();
+  }
+
+  s_send(sock, s_out.str());
   return 0;
 }
 

@@ -8,49 +8,37 @@ from pyglet.window import key
 
 from wavefield import Wavefield
 
-WIDTH  = 100
-HEIGHT = 100
+def update(dt):
+    data.send(str(dt * 10))
+    state = array.array('d', data.recv())
+    wavefield.update(state)
 
-SCALE_FACTOR = 4
+if __name__ == '__main__':
+    context = zmq.Context(1)
 
-drawing = True
-window = pyglet.window.Window(SCALE_FACTOR * WIDTH, SCALE_FACTOR * HEIGHT)
+    comm = context.socket(zmq.REQ)
+    comm.bind('tcp://127.0.0.1:5000')
 
-glPointSize(SCALE_FACTOR)
-glScalef(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR)
+    data = context.socket(zmq.REQ)
+    data.bind('tcp://127.0.0.1:5001')
 
-@window.event
-def on_key_press(symbol, modifiers):
-    global drawing
+    comm.send("dims")
+    width, height = map(int, comm.recv().split())
 
-    if symbol == key.SPACE:
-        drawing = not drawing
-    elif symbol == key.ESCAPE:
-        window.has_exit = True
+    window = pyglet.window.Window(width, height)
+    wavefield = Wavefield(width, height)
 
-@window.event
-def on_draw():
-    if drawing:
+    @window.event
+    def on_key_press(symbol, modifiers):
+        if symbol == key.ESCAPE:
+            window.has_exit = True
+
+    @window.event
+    def on_draw():
         window.clear()
         wavefield.draw()
 
-def update(dt):
-    data.send(str(dt))
-    state = array.array('d', data.recv())
-    if drawing:
-        wavefield.update(state)
-
-pyglet.clock.schedule_interval(update, 1/30.)
-
-wavefield = Wavefield(WIDTH, HEIGHT)
-
-context = zmq.Context(1)
-
-comm = context.socket(zmq.REQ)
-comm.bind('tcp://127.0.0.1:5000')
-
-data = context.socket(zmq.REQ)
-data.bind('tcp://127.0.0.1:5001')
-
-if __name__ == '__main__':
+    pyglet.clock.schedule_interval(update, 1/10.0)
     pyglet.app.run()
+
+

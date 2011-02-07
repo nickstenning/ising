@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "wavefield.h"
+#include "util.h"
 
 const double Wavefield::dt = 0.1;
 
