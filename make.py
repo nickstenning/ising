@@ -5,8 +5,8 @@ from fabricate import *
 
 targets  = {
     'tug': {
-        'libs': [],
-        'sources': ['tug']
+        'libs': ['libzmq'],
+        'sources': ['tug', 'matrix', 'util', 'wavefield', 'zhelpers']
     }
 }
 
