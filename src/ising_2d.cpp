@@ -7,8 +7,8 @@
 const double Ising2D::J = 1.0;
 const double Ising2D::T = (J * 2.0) / log(1 + sqrt(2));
 
-Ising2D::Ising2D (size_t width, size_t height)
-: PeriodicMatrix<short>(width, height)
+Ising2D::Ising2D (size_t r, size_t c)
+: PeriodicMatrix<short>(r, c)
 {
   reset();
 }

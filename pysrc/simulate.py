@@ -23,7 +23,7 @@ if __name__ == '__main__':
     data.bind('tcp://127.0.0.1:5001')
 
     comm.send("dims")
-    width, height = map(int, comm.recv().split())
+    height, width = map(int, comm.recv().split())
 
     window = pyglet.window.Window(width, height)
     bitplane = Bitplane(width, height)
