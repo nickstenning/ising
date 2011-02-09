@@ -67,7 +67,8 @@ inline T& Matrix<T>::get (size_t row, size_t col)
 template<typename T>
 inline T Matrix<T>::get (size_t row, size_t col) const
 {
-  return get(row, col);
+  if (row >= m_rows || col >= m_cols) throw BadIndex();
+  return m_mtx[m_cols * row + col];
 }
 
 template<typename T>
