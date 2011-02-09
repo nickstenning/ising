@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstdlib>
 
 #include "zmq.h"
 
@@ -11,7 +12,7 @@
 std::string process_comm(std::string&, Ising2D&);
 std::string process_data(std::string&, Ising2D&);
 
-int main (unsigned int /*argc*/, char* const /*argv*/[])
+int main (unsigned int argc, char* const argv[])
 {
   zmq::context_t ctx(1);
 
@@ -21,7 +22,18 @@ int main (unsigned int /*argc*/, char* const /*argv*/[])
   comm.connect("tcp://127.0.0.1:5000");
   data.connect("tcp://127.0.0.1:5001");
 
-  Ising2D ising(400, 400);
+  // Set dimensions from command line if given
+  size_t rows, cols;
+
+  if (argc == 3) {
+    rows = strtoul(argv[1], NULL, 0);
+    cols = strtoul(argv[2], NULL, 0);
+  } else {
+    rows = 200;
+    cols = 200;
+  }
+
+  Ising2D ising(rows, cols);
 
   while (1) {
     std::string req, rep;
