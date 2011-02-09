@@ -1,0 +1,18 @@
+# Ising model simulator
+
+## Build & run:
+
+    $ ./make.py
+    CC src/ising.cpp
+    [...]
+    LD build/ising
+ 
+    $ ./build/ising
+
+Then, in a new terminal, run:
+
+    $ python ./pysrc/simulate.py
+
+May need to specify 32-bit Python on Mac OS X:
+
+    $ VERSIONER_PYTHON_PREFER_32_BIT=yes python ./pysrc/simulate.py
