@@ -4,9 +4,9 @@ import os, commands, re
 from fabricate import *
 
 targets  = {
-    'tug': {
+    'ising': {
         'libs': ['libzmq'],
-        'sources': ['tug', 'matrix', 'util', 'wavefield', 'zhelpers']
+        'sources': ['ising', 'matrix', 'periodic_matrix', 'util', 'ising_2d', 'zhelpers']
     }
 }
 

@@ -4,12 +4,12 @@
 
 #include "zmq.h"
 
-#include "wavefield.h"
+#include "ising_2d.h"
 #include "zhelpers.h"
 #include "util.h"
 
-int process_comm(zmq::socket_t&, Wavefield&);
-int process_data(zmq::socket_t&, Wavefield&);
+int process_comm(zmq::socket_t&, Ising2D&);
+int process_data(zmq::socket_t&, Ising2D&);
 
 int main (unsigned int /*argc*/, char* const /*argv*/[])
 {
@@ -27,26 +27,26 @@ int main (unsigned int /*argc*/, char* const /*argv*/[])
     { data, 0, ZMQ_POLLIN, 0 }
   };
 
-  Wavefield wf(200, 200);
+  Ising2D ising(200, 200);
 
   while (1) {
     zmq::poll(&poll_items[0], 2, -1);
 
     // Got command
     if (poll_items[0].revents & ZMQ_POLLIN) {
-      process_comm(comm, wf);
+      process_comm(comm, ising);
     }
 
     // Got request for data
     if (poll_items[1].revents & ZMQ_POLLIN) {
-      process_data(data, wf);
+      process_data(data, ising);
     }
   }
 
   return 0;
 }
 
-int process_comm(zmq::socket_t& sock, Wavefield& wf)
+int process_comm(zmq::socket_t& sock, Ising2D& ising)
 {
   std::istringstream s_in( s_recv(sock) );
   std::ostringstream s_out;
@@ -55,24 +55,24 @@ int process_comm(zmq::socket_t& sock, Wavefield& wf)
   s_in >> cmd;
 
   if (cmd.compare("dims") == 0) {
-    s_out << wf.rows() << " " << wf.cols();
+    s_out << ising.rows() << " " << ising.cols();
   }
 
   s_send(sock, s_out.str());
   return 0;
 }
 
-int process_data(zmq::socket_t& sock, Wavefield& wf)
+int process_data(zmq::socket_t& sock, Ising2D& ising)
 {
   std::istringstream s_in( s_recv(sock) );
 
-  double dt;
-  s_in >> dt;
+  int numSteps;
+  s_in >> numSteps;
 
-  wf.step(dt);
+  ising.step(numSteps);
 
   std::ostringstream s_out( std::ios::binary );
-  wf.serialize(s_out);
+  ising.serialize(s_out);
 
   s_send(sock, s_out.str());
 

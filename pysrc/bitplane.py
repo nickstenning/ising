@@ -1,7 +1,7 @@
 import array
 import pyglet
 
-class Wavefield(object):
+class Bitplane(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height

@@ -6,12 +6,12 @@ import pyglet
 from pyglet.gl import *
 from pyglet.window import key
 
-from wavefield import Wavefield
+from bitplane import Bitplane
 
 def update(dt):
-    data.send(str(dt * 10))
-    state = array.array('d', data.recv())
-    wavefield.update(state)
+    data.send("1")
+    state = array.array('h', data.recv())
+    bitplane.update(state)
 
 if __name__ == '__main__':
     context = zmq.Context(1)
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     width, height = map(int, comm.recv().split())
 
     window = pyglet.window.Window(width, height)
-    wavefield = Wavefield(width, height)
+    bitplane = Bitplane(width, height)
 
     @window.event
     def on_key_press(symbol, modifiers):
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     @window.event
     def on_draw():
         window.clear()
-        wavefield.draw()
+        bitplane.draw()
 
     pyglet.clock.schedule_interval(update, 1/10.0)
     pyglet.app.run()
