@@ -13,7 +13,7 @@ class Bitplane(object):
 
         data_array = array.array(
             'B',
-            (int(255 * (x + 1) / 2.0) for x in self.data)
+            (int(200 * ((x + 1) / 2.0) + 55) for x in self.data)
         )
 
         self.image_data = pyglet.image.ImageData(self.width, self.height, "L", data_array.tostring())
