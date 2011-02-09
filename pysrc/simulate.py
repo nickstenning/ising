@@ -41,7 +41,7 @@ if __name__ == '__main__':
         window.clear()
         bitplane.draw()
 
-    pyglet.clock.schedule_interval(update, 1/10.0)
+    pyglet.clock.schedule_interval(update, 1/20.0)
     pyglet.app.run()
 
 

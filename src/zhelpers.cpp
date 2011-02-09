@@ -10,26 +10,26 @@
 
 #define within(num) (int) ((float) (num) * random () / (RAND_MAX + 1.0))
 
-std::string s_recv (zmq::socket_t& socket) {
+bool s_recv (zmq::socket_t& socket, std::string& string, int flags) {
   zmq::message_t message;
-  socket.recv(&message);
+  bool rc = socket.recv(&message, flags);
 
-  std::string string(static_cast<char*>(message.data()), message.size());
+  string.assign(static_cast<char*>(message.data()), message.size());
 
-  return string;
-}
-
-bool s_send (zmq::socket_t& socket, std::string const& string) {
-  zmq::message_t message(string.size());
-  memcpy(message.data(), string.data(), string.size());
-
-  bool rc = socket.send(message);
   return rc;
 }
 
-bool s_send (zmq::socket_t& socket, char const string[]) {
+bool s_send (zmq::socket_t& socket, std::string const& string, int flags) {
+  zmq::message_t message(string.size());
+  memcpy(message.data(), string.data(), string.size());
+
+  bool rc = socket.send(message, flags);
+  return rc;
+}
+
+bool s_send (zmq::socket_t& socket, char const string[], int flags) {
   std::string sstring(string);
-  return s_send(socket, sstring);
+  return s_send(socket, sstring, flags);
 }
 
 void s_set_id (zmq::socket_t& socket) {

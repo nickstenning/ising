@@ -8,8 +8,8 @@
 #include "zhelpers.h"
 #include "util.h"
 
-int process_comm(zmq::socket_t&, Ising2D&);
-int process_data(zmq::socket_t&, Ising2D&);
+std::string process_comm(std::string&, Ising2D&);
+std::string process_data(std::string&, Ising2D&);
 
 int main (unsigned int /*argc*/, char* const /*argv*/[])
 {
@@ -21,34 +21,32 @@ int main (unsigned int /*argc*/, char* const /*argv*/[])
   comm.connect("tcp://127.0.0.1:5000");
   data.connect("tcp://127.0.0.1:5001");
 
-  // Initialize poll set
-  zmq::pollitem_t poll_items [] = {
-    { comm, 0, ZMQ_POLLIN, 0 },
-    { data, 0, ZMQ_POLLIN, 0 }
-  };
-
-  Ising2D ising(200, 200);
+  Ising2D ising(400, 400);
 
   while (1) {
-    zmq::poll(&poll_items[0], 2, -1);
+    std::string req, rep;
 
-    // Got command
-    if (poll_items[0].revents & ZMQ_POLLIN) {
-      process_comm(comm, ising);
+    // Process any commands
+    if (s_recv(comm, req, ZMQ_NOBLOCK)) {
+      rep = process_comm(req, ising);
+      s_send(comm, rep);
     }
 
-    // Got request for data
-    if (poll_items[1].revents & ZMQ_POLLIN) {
-      process_data(data, ising);
+    // Process any requests for data
+    if (s_recv(data, req, ZMQ_NOBLOCK)) {
+      rep = process_data(req, ising);
+      s_send(data, rep);
     }
+
+    ising.step();
   }
 
   return 0;
 }
 
-int process_comm(zmq::socket_t& sock, Ising2D& ising)
+std::string process_comm(std::string& msg, Ising2D& ising)
 {
-  std::istringstream s_in( s_recv(sock) );
+  std::istringstream s_in( msg );
   std::ostringstream s_out;
   std::string cmd;
 
@@ -63,24 +61,16 @@ int process_comm(zmq::socket_t& sock, Ising2D& ising)
     s_out << "OK";
   }
 
-  s_send(sock, s_out.str());
-  return 0;
+  return s_out.str();
 }
 
-int process_data(zmq::socket_t& sock, Ising2D& ising)
+std::string process_data(std::string& msg, Ising2D& ising)
 {
-  std::istringstream s_in( s_recv(sock) );
-
-  int numSteps;
-  s_in >> numSteps;
-
-  ising.step(numSteps);
-
+  std::istringstream s_in( msg );
   std::ostringstream s_out( std::ios::binary );
+
   ising.serialize(s_out);
 
-  s_send(sock, s_out.str());
-
-  return 0;
+  return s_out.str();
 }
 
