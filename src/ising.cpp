@@ -58,6 +58,11 @@ int process_comm(zmq::socket_t& sock, Ising2D& ising)
     s_out << ising.rows() << " " << ising.cols();
   }
 
+  if (cmd.compare("rst") == 0) {
+    ising.reset();
+    s_out << "OK";
+  }
+
   s_send(sock, s_out.str());
   return 0;
 }

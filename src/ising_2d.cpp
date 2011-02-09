@@ -10,6 +10,11 @@ const double Ising2D::T = 2.0;
 Ising2D::Ising2D (size_t width, size_t height)
 : PeriodicMatrix<short>(width, height)
 {
+  reset();
+}
+
+void Ising2D::reset ()
+{
   for(size_t i = 0; i < rows(); i += 1) {
     for(size_t j = 0; j < cols(); j += 1) {
       get(i, j) = util::choose(0.5) ? 1 : -1;

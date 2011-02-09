@@ -30,7 +30,10 @@ if __name__ == '__main__':
 
     @window.event
     def on_key_press(symbol, modifiers):
-        if symbol == key.ESCAPE:
+        if symbol == key.SPACE:
+            comm.send("rst")
+            assert comm.recv() == "OK"
+        elif symbol == key.ESCAPE:
             window.has_exit = True
 
     @window.event
