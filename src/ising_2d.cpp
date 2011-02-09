@@ -5,7 +5,7 @@
 #include "ising_2d.h"
 
 const double Ising2D::J = 1.0;
-const double Ising2D::T = 2.0;
+const double Ising2D::T = (J * 2.0) / log(1 + sqrt(2));
 
 Ising2D::Ising2D (size_t width, size_t height)
 : PeriodicMatrix<short>(width, height)
